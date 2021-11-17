@@ -1,5 +1,4 @@
 import streamlit as stl
-import os
 import paramiko
 
 # save the file in the directory where  the app is running.
@@ -21,14 +20,14 @@ def download_file_to_computer(filename, host, user, psw):
     ssh.close()
 
 
-stl.title("Automodeling Software")
+stl.title("PR's fan club")
 
 # drag and drop the mutation file
 input_file = stl.file_uploader("Drag your input file here")
 
 host = "XXX.dsf.unica.it" # nome macchina
-user = "" # nome utente
-psw = ""  # password
+user = "PIPPO" # nome utente
+psw = "TOPOLINO"  # password
 
 if input_file is not None:
     save_file(input_file)
