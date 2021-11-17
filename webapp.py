@@ -16,7 +16,7 @@ def download_file_to_computer(filename, host, user, psw):
     sftp = ssh.open_sftp()
     #
     finalpath = "/home/" + user + "/Desktop/" + filename 
-    sftp.put("/content/" + filename, finalpath)
+    sftp.put(filename, finalpath)
     sftp.close()
     ssh.close()
 
