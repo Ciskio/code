@@ -23,7 +23,7 @@ def check_mistakes(parameter_value, parameter_name):
       parameter_value = float(parameter_value)
     except:
       stl.error("Please enter a valid input")
-    safe = 1
+      safe = 1
   elif type(parameter_value) == str and parameter_name not in float_parameters:
     try:
       parameter_value = int(parameter_value)
@@ -36,13 +36,13 @@ def write_parameters_file(parameters_dict):
   with open("parameters.dat","w") as f:
     f.write("DB_LOCATION=/home/foliva/Desktop/Algoritmo_testing/Algoritmo/Algoritmo_fresh/\n\n")
     f.write("PYMODHOME=/home/foliva/miniconda/envs/pymod3/lib/python3.7/site-packages/pmg_tk/startup/pymod3/pymod_lib/pymod_main/\n\n")
-    f.write("RESOLUTION=" + str(parameters_dict["res"]))
-    f.write("SEQID=" + str(parameters_dict["sequid"]))
-    f.write("HMM_TO_IMPORT=" + str(parameters_dict["hmm_2_import"]))
-    f.write("PDB_TO_USE=" + str(parameters_dict["pdb_2_use"]))
-    f.write("E_VAL=" + str(parameters_dict["eva"]))
-    f.write("NUM_OF_MOD_WT=" + str(parameters_dict["number_of_wt_models"]))
-    f.write("NUM_OF_MOD_mut=" + str(parameters_dict["number_of_MUT_models"]))
+    f.write("RESOLUTION=" + str(parameters_dict["res"]) + "\n\n")
+    f.write("SEQID=" + str(parameters_dict["seqid"]))
+    f.write("HMM_TO_IMPORT=" + str(parameters_dict["hmm_2_import"]) + "\n\n")
+    f.write("PDB_TO_USE=" + str(parameters_dict["pdb_2_use"]) + "\n\n")
+    f.write("E_VAL=" + str(parameters_dict["eva"]) + "\n\n")
+    f.write("NUM_OF_MOD_WT=" + str(parameters_dict["number_of_wt_models"]) + "\n\n")
+    f.write("NUM_OF_MOD_mut=" + str(parameters_dict["number_of_mut_models"]))
 
 # title
 
@@ -86,4 +86,3 @@ if np.sum(safe) == 0:
 if input_file is not None:
   save_file(input_file)
 #    start_desktop()
-
