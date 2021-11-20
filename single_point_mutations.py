@@ -139,6 +139,7 @@ def download_mutations(link_protein):
                     count += 1
                 elif mutation not in mut_list:
                     mut_list.append(mutation)
+    print(mut_list)
     return mut_list
 
 # def cleanup():
@@ -182,6 +183,7 @@ def old_main():
         if no_link is False:
             link_protein = "https://www.uniprot.org" + str(links[0])
             print(i + " Uniprot link: " + link_protein)
+            download_mutations(link_protein)
 
 # save the file in the directory where  the app is running.
 def save_file(infile):
@@ -217,4 +219,3 @@ def app():
     
     if safe == 1:
       old_main()
-
