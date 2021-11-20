@@ -1,4 +1,3 @@
-import streamlit as st
 import os
 import subprocess
 import numpy as np
@@ -45,44 +44,44 @@ def write_parameters_file(parameters_dict):
     f.write("NUM_OF_MOD_mut=" + str(parameters_dict["number_of_mut_models"]))
 
 # title
+def app():
+  st.title("Automodeling Software")
 
-st.title("Automodeling Software")
+  # drag and drop the mutation file
+  input_file = st.file_uploader("Drag your input file here")
 
-# drag and drop the mutation file
-input_file = st.file_uploader("Drag your input file here")
+  col1, col2 = st.columns(2) # make 2 columns for input parameters
+  # parameters = st.form(key='INPUT PARAMETERS')
+  safe = []
+  with st.form(key='parameters'):
+    with col1:
+        res = st.text_input(label='Max acceptable resolution for templates')
+        safe.append(check_mistakes(res, "res"))
+        seqid = st.text_input(label='Sequence identity threshold')
+        safe.append(check_mistakes(seqid, "seqid"))
+        hmm_2_import = st.text_input(label='HMM to import')
+        safe.append(check_mistakes(hmm_2_import, "hmm_2_import)"))
+        pdb_2_use = st.text_input(label='MAX number of templates to download')
+        safe.append(check_mistakes(pdb_2_use, "pdb_2_use"))
+    with col2:
+        eva = st.text_input(label='E val')
+        safe.append(check_mistakes(eva, "eva"))
+        number_of_wt_models = st.text_input(label='Number of WT model to generate')
+        safe.append(check_mistakes(number_of_wt_models, "number_of_wt_models"))
+        number_of_mut_models = st.text_input(label='Number of MUTANTS model to generate')
+        safe.append(check_mistakes(number_of_mut_models, "number_of_mut_models"))
+    st.form_submit_button()
 
-col1, col2 = st.columns(2) # make 2 columns for input parameters
-# parameters = st.form(key='INPUT PARAMETERS')
-safe = []
-with st.form(key='parameters'):
-  with col1:
-      res = st.text_input(label='Max acceptable resolution for templates')
-      safe.append(check_mistakes(res, "res"))
-      seqid = st.text_input(label='Sequence identity threshold')
-      safe.append(check_mistakes(seqid, "seqid"))
-      hmm_2_import = st.text_input(label='HMM to import')
-      safe.append(check_mistakes(hmm_2_import, "hmm_2_import)"))
-      pdb_2_use = st.text_input(label='MAX number of templates to download')
-      safe.append(check_mistakes(pdb_2_use, "pdb_2_use"))
-  with col2:
-      eva = st.text_input(label='E val')
-      safe.append(check_mistakes(eva, "eva"))
-      number_of_wt_models = st.text_input(label='Number of WT model to generate')
-      safe.append(check_mistakes(number_of_wt_models, "number_of_wt_models"))
-      number_of_mut_models = st.text_input(label='Number of MUTANTS model to generate')
-      safe.append(check_mistakes(number_of_mut_models, "number_of_mut_models"))
-  st.form_submit_button()
+  if np.sum(safe) == 0:
+    parameters_dict = { "res": res,
+                        "seqid": seqid,
+                        "hmm_2_import": hmm_2_import,
+                        "pdb_2_use": pdb_2_use,
+                        "eva": eva,
+                        "number_of_wt_models": number_of_wt_models,
+                        "number_of_mut_models": number_of_mut_models}
+    write_parameters_file(parameters_dict)
 
-if np.sum(safe) == 0:
-  parameters_dict = { "res": res,
-                      "seqid": seqid,
-                      "hmm_2_import": hmm_2_import,
-                      "pdb_2_use": pdb_2_use,
-                      "eva": eva,
-                      "number_of_wt_models": number_of_wt_models,
-                      "number_of_mut_models": number_of_mut_models}
-  write_parameters_file(parameters_dict)
-
-if input_file is not None:
-  save_file(input_file)
-#    start_desktop()
+  if input_file is not None:
+    save_file(input_file)
+  #    start_desktop()
