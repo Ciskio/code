@@ -81,8 +81,8 @@ def get_links(url, filter_name, gene_name):
 
     while len(links) > 1:
         links.pop()
-    for link in links:
-        print(link[9:])
+#     for link in links:
+#         print(link[9:])
     return links
 
 def download_mutations(link_protein):
@@ -141,14 +141,14 @@ def download_mutations(link_protein):
                     mut_list.append(mutation)
     return mut_list
 
-def cleanup():
-    finaldestination = "archived_results"
-    if os.path.exists(finaldestination) is False:
-        os.makedirs(finaldestination)
-    for file in os.listdir():
-        if os.path.isfile(file) and "_Top_3_Results.txt" in str(file):
-            print(file)
-            os.replace(file, finaldestination + "//" + str(file))
+# def cleanup():
+#     finaldestination = "archived_results"
+#     if os.path.exists(finaldestination) is False:
+#         os.makedirs(finaldestination)
+#     for file in os.listdir():
+#         if os.path.isfile(file) and "_Top_3_Results.txt" in str(file):
+#             # print(file)
+#             os.replace(file, finaldestination + "//" + str(file))
 
 
 def old_main():
@@ -170,7 +170,6 @@ def old_main():
     for i in genes_list:
         complete_link = "https://www.uniprot.org/uniprot/?query=" + i + "+human&sort=score"
         nicei = i.replace("+", " ")
-        print(f"{bcolors.OKBLUE}Contacting UNIPROT and looking for gene: {bcolors.BOLD}%s{bcolors.ENDC}{bcolors.ENDC}" %nicei)
         links = get_links(complete_link, "/uniprot/", i)
         no_link = False
         try:
@@ -179,26 +178,43 @@ def old_main():
             no_link = True
         if no_link is True:
             mutlist.append("NOT FOUND")
+            print(i + " Not Found")
         if no_link is False:
             link_protein = "https://www.uniprot.org" + str(links[0])
-        print(link_protein)
+            print(i + " Uniprot link: " + link_protein)
 
 # save the file in the directory where  the app is running.
 def save_file(infile):
     with open("genelist.txt", "wb") as f:
         f.write(infile.getbuffer())
 
+def save_genes(genelist):
+  with open("genelist.txt", "w") as f:
+      f.write(genelist)
+
 # main
 def app():
 
-    st.title("Automodeling Software")
+    st.title("Search for single point mutations on Uniprot")
+
+    safe = 0
 
     # drag and drop the mutation file
     input_file = st.file_uploader("Drag your input file here")
     if input_file is not None:
         save_file(input_file)
+        safe = 1
 
-    genelist = st.text_area("Insert your genes here", height=100)
+    with st.form(key='genes'):
+      genelist = st.text_area("Insert your genes here", height=100)
 
-    st.title(genelist)
-    st.form_submit_button()
+      # st.title(genelist)
+      st.form_submit_button()
+
+    if genelist is not None:
+      save_genes(genelist)
+      safe = 1
+    
+    if safe == 1:
+      old_main()
+
