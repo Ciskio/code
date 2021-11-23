@@ -219,7 +219,12 @@ def waiting_function(df):
     if value > 1.0:
       value = 0
       time.sleep(0.5)
-    mybar.progress(value)
+    if os.path.isfile("output.zip"):
+      mybar.progress(1.0)
+      # st.balloons()
+      break
+    else:
+      mybar.progress(value)
     if value == 0:
       time.sleep(1)
     else:
@@ -253,7 +258,10 @@ def app():
       submit_pasted_list = st.form_submit_button()
 
     action_message = st.empty()
-
+    try:
+      os.remove("output.zip")
+    except FileNotFoundError:
+      pass
     mutations_pasted_list_message = "Looking for mutations"
     if submit_pasted_list:
       action_message.markdown(mutations_pasted_list_message)
@@ -273,8 +281,15 @@ def app():
       # run_old_main = Thread(target = old_main)
       df = old_main()
       if df.empty == False:
-        # loading_bar.join()
         files_to_zip = ["mutation_list.csv", "mutation_list.xlsx", "protein_links.txt"]
         compress_function(files_to_zip, "output.zip")
         action_message.markdown("Job completed successfully. Here's the results:")
         st.dataframe(df)
+        with open("output.zip", "rb") as fp:
+            btn = st.download_button(
+                label="Download",
+                data=fp,
+                file_name="Uniprot_mutations.zip",
+                # mime="application/zip"
+            )
+        loading_bar.join()
