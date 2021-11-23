@@ -203,10 +203,10 @@ def old_main():
     df
     return df
 
-# save the file in the directory where  the app is running.
 def save_file(infile):
-    with open("genelist.txt", "wb") as f:
+    with open(infile.name, "wb") as f:
         f.write(infile.getbuffer())
+    os.rename(infile.name, "genelist.txt")
 
 def save_genes(genelist):
   with open("genelist.txt", "w") as f:
@@ -244,12 +244,17 @@ def app():
     st.title("Search for single point mutations on Uniprot")
 
     safe = 0
+    try:
+      os.remove("output.zip")
+    except FileNotFoundError:
+      pass
 
     # drag and drop the mutation file
-    input_file = st.file_uploader("Drag your input file here")
-    if input_file is not None:
-        save_file(input_file)
-        safe = 1
+    with st.form(key='genes_file'):
+      input_file = st.file_uploader("Drag your input file here")
+      if input_file is not None:
+          save_file(input_file)
+      submit_file_list = st.form_submit_button()
 
     with st.form(key='genes'):
       genelist = st.text_area("Insert your genes here", height=100)
@@ -257,26 +262,20 @@ def app():
       # st.title(genelist)
       submit_pasted_list = st.form_submit_button()
 
-    action_message = st.empty()
-    try:
-      os.remove("output.zip")
-    except FileNotFoundError:
-      pass
-    mutations_pasted_list_message = "Looking for mutations"
-    if submit_pasted_list:
-      action_message.markdown(mutations_pasted_list_message)
-
       df = pd.DataFrame()
       loading_bar = Thread(target = waiting_function, args = (df, ))
       st.report_thread.add_report_ctx(loading_bar)
       loading_bar.start()
 
-    if genelist is not None:
-      save_file_genelist = Thread(target = save_genes, args =(genelist, ))
-      save_file_genelist.start()
-      save_file_genelist.join()
-      safe = 1
+    if submit_pasted_list is not False:
+      save_genes(genelist)
     
+    if submit_pasted_list or submit_file_list:
+      safe = 1
+      action_message = st.empty()
+      mutations_pasted_list_message = "Looking for mutations"
+      action_message.markdown(mutations_pasted_list_message)
+
     if safe == 1:
       # run_old_main = Thread(target = old_main)
       df = old_main()
