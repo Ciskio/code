@@ -1,9 +1,10 @@
+# imports
+import pandas as pd
 from bs4 import BeautifulSoup
 from urllib.request import Request
 import urllib.request
 import re
 import os
-import streamlit as st
 
 # Functions
 
@@ -78,11 +79,13 @@ def get_links(url, filter_name, gene_name):
             links.append("/uniprot/" + str(entry_uniprot))
         counter += 1
 
+        k = open(protein_to_find.replace(" ", "_") + "_Top_3_Results.txt", "w")
+        for i in src:
+            k.write("\n\n" + str(i) + "\n\n")
+
 
     while len(links) > 1:
         links.pop()
-#     for link in links:
-#         print(link[9:])
     return links
 
 def download_mutations(link_protein):
@@ -139,17 +142,7 @@ def download_mutations(link_protein):
                     count += 1
                 elif mutation not in mut_list:
                     mut_list.append(mutation)
-    print(mut_list)
     return mut_list
-
-# def cleanup():
-#     finaldestination = "archived_results"
-#     if os.path.exists(finaldestination) is False:
-#         os.makedirs(finaldestination)
-#     for file in os.listdir():
-#         if os.path.isfile(file) and "_Top_3_Results.txt" in str(file):
-#             # print(file)
-#             os.replace(file, finaldestination + "//" + str(file))
 
 
 def old_main():
@@ -167,6 +160,7 @@ def old_main():
 
     mutlist = []
 
+    linklist = open("protein_links.txt", "w")
 
     for i in genes_list:
         complete_link = "https://www.uniprot.org/uniprot/?query=" + i + "+human&sort=score"
@@ -174,16 +168,34 @@ def old_main():
         links = get_links(complete_link, "/uniprot/", i)
         no_link = False
         try:
-            links[0]
+           links[0]
         except IndexError:
-            no_link = True
+           no_link = True
         if no_link is True:
-            mutlist.append("NOT FOUND")
-            print(i + " Not Found")
+           mutlist.append("NOT FOUND")
         if no_link is False:
-            link_protein = "https://www.uniprot.org" + str(links[0])
-            print(i + " Uniprot link: " + link_protein)
-            download_mutations(link_protein)
+           link_protein = "https://www.uniprot.org" + str(links[0])
+           mutations = download_mutations(link_protein)  # , dangerzone
+           linklist.write(nicei + ": " + str(link_protein) + "\n" )
+           mutlist.append(mutations)
+    counter = 0
+    lenlist = len(mutlist)
+    while counter < lenlist:
+        if mutlist[counter] == "NOT FOUND":
+            linklist.write(str(protein_name[counter].strip()) + ": NOT FOUND\n")
+            protein_name.pop(counter)
+            mutlist.pop(counter)
+            lenlist -= 1
+        else:
+            counter += 1
+
+    nicelist = []
+    for i in protein_name:
+        nicelist.append(i.strip())
+
+    df = pd.DataFrame(mutlist, index=[nicelist]).T
+    df.to_csv("mutation_list.csv", index=False)
+    df.to_excel("mutation_list.xlsx", index=True)
 
 # save the file in the directory where  the app is running.
 def save_file(infile):
