@@ -9,6 +9,7 @@ import streamlit as st
 # from streamlit.ReportThread import add_report_ctx
 import time
 from threading import Thread
+import zipfile
 
 # Functions
 
@@ -152,7 +153,6 @@ def download_mutations(link_protein):
 def old_main():
     isoform_file = "genelist.txt"
     protein_in = open(isoform_file, 'r')
-
     protein_name = protein_in.readlines()
 
     mut_list = []
@@ -225,6 +225,14 @@ def waiting_function(df):
     else:
       time.sleep(0.1)
     value+=0.1
+
+def compress_function(files, outputname):
+  compression = zipfile.ZIP_STORED
+  zf = zipfile.ZipFile(outputname, mode="w")
+  for file_to_zip in files:
+    zf.write(file_to_zip, file_to_zip, compress_type=compression)
+  zf.close()
+
 # main
 def app():
 
@@ -245,26 +253,28 @@ def app():
       submit_pasted_list = st.form_submit_button()
 
     action_message = st.empty()
-    waiting_message = st.empty()
 
     mutations_pasted_list_message = "Looking for mutations"
     if submit_pasted_list:
       action_message.markdown(mutations_pasted_list_message)
 
       df = pd.DataFrame()
-      thread = Thread(target = waiting_function, args = (df, ))
-      st.report_thread.add_report_ctx(thread)
-      thread.start()
+      loading_bar = Thread(target = waiting_function, args = (df, ))
+      st.report_thread.add_report_ctx(loading_bar)
+      loading_bar.start()
 
     if genelist is not None:
-      save_genes(genelist)
+      save_file_genelist = Thread(target = save_genes, args =(genelist, ))
+      save_file_genelist.start()
+      save_file_genelist.join()
       safe = 1
     
-    print("test")
-
     if safe == 1:
+      # run_old_main = Thread(target = old_main)
       df = old_main()
       if df.empty == False:
-        thread.join()
+        # loading_bar.join()
+        files_to_zip = ["mutation_list.csv", "mutation_list.xlsx", "protein_links.txt"]
+        compress_function(files_to_zip, "output.zip")
         action_message.markdown("Job completed successfully. Here's the results:")
         st.dataframe(df)
