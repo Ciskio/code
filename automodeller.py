@@ -55,34 +55,43 @@ def app():
   # parameters = st.form(key='INPUT PARAMETERS')
   safe = []
   with st.form(key='parameters'):
+    submit_parameters = st.form_submit_button()
     with col1:
-        res = st.text_input(label='Max acceptable resolution for templates')
-        safe.append(check_mistakes(res, "res"))
-        seqid = st.text_input(label='Sequence identity threshold')
-        safe.append(check_mistakes(seqid, "seqid"))
-        hmm_2_import = st.text_input(label='HMM to import')
-        safe.append(check_mistakes(hmm_2_import, "hmm_2_import)"))
-        pdb_2_use = st.text_input(label='MAX number of templates to download')
-        safe.append(check_mistakes(pdb_2_use, "pdb_2_use"))
+        res = st.text_input(label='Max acceptable resolution for templates', value="4.5", help="test")
+        if submit_parameters:
+          safe.append(check_mistakes(res, "res"))
+        seqid = st.text_input(label='Sequence identity threshold', value="25")
+        if submit_parameters:
+          safe.append(check_mistakes(seqid, "seqid"))
+        hmm_2_import = st.text_input(label='HMM to import', value="100")
+        if submit_parameters:
+          safe.append(check_mistakes(hmm_2_import, "hmm_2_import)"))
+        pdb_2_use = st.text_input(label='MAX number of templates to download', value="10")
+        if submit_parameters:
+          safe.append(check_mistakes(pdb_2_use, "pdb_2_use"))
     with col2:
-        eva = st.text_input(label='E val')
-        safe.append(check_mistakes(eva, "eva"))
-        number_of_wt_models = st.text_input(label='Number of WT model to generate')
-        safe.append(check_mistakes(number_of_wt_models, "number_of_wt_models"))
-        number_of_mut_models = st.text_input(label='Number of MUTANTS model to generate')
-        safe.append(check_mistakes(number_of_mut_models, "number_of_mut_models"))
-    st.form_submit_button()
+        eva = st.text_input(label='E val', value="0.001")
+        if submit_parameters:
+          safe.append(check_mistakes(eva, "eva"))
+        number_of_wt_models = st.text_input(label='Number of WT model to generate', value="50")
+        if submit_parameters:
+          safe.append(check_mistakes(number_of_wt_models, "number_of_wt_models"))
+        number_of_mut_models = st.text_input(label='Number of MUTANTS model to generate', value="25")
+        if submit_parameters:
+          safe.append(check_mistakes(number_of_mut_models, "number_of_mut_models"))
 
-  if np.sum(safe) == 0:
-    parameters_dict = { "res": res,
-                        "seqid": seqid,
-                        "hmm_2_import": hmm_2_import,
-                        "pdb_2_use": pdb_2_use,
-                        "eva": eva,
-                        "number_of_wt_models": number_of_wt_models,
-                        "number_of_mut_models": number_of_mut_models}
-    write_parameters_file(parameters_dict)
+  if submit_parameters:
+    if np.sum(safe) == 0:
+      parameters_dict = { "res": res,
+                          "seqid": seqid,
+                          "hmm_2_import": hmm_2_import,
+                          "pdb_2_use": pdb_2_use,
+                          "eva": eva,
+                          "number_of_wt_models": number_of_wt_models,
+                          "number_of_mut_models": number_of_mut_models}
+      write_parameters_file(parameters_dict)
 
   if input_file is not None:
     save_file(input_file)
   #    start_desktop()
+
