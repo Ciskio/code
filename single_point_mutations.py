@@ -270,6 +270,14 @@ def app():
     if submit_pasted_list is not False:
       save_genes(genelist)
     
+    with st.form(key='email address'):
+        email = st.text_input(label='')
+        submit_email = st.form_submit_button()
+    if submit_email:
+        with open("email_address.dat", "w") as f:
+            f.write(email)
+        
+    
     if submit_pasted_list or submit_file_list:
       safe = 1
       action_message = st.empty()
