@@ -6,10 +6,16 @@ import urllib.request
 import re
 import os
 import streamlit as st
-# from streamlit.ReportThread import add_report_ctx
 import time
 from threading import Thread
 import zipfile
+# generate link to download
+import base64
+# send email
+import email, smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 # Functions
 
@@ -238,6 +244,43 @@ def compress_function(files, outputname):
     zf.write(file_to_zip, file_to_zip, compress_type=compression)
   zf.close()
 
+def get_email():
+  with st.form(key='email_address'):
+    email = st.text_input(label='Insert email address to get notified when your job is done.', value="mrgreat@bestmail.com")
+    submit_email = st.form_submit_button()
+    return email
+
+def send_email(email_address, download_link):
+  sender_email = "francescoliva91@gmail.com"
+  password = "obddezmdwiayuxnw"
+  msg = MIMEMultipart("alternative")
+  msg["Subject"] = "Your results are in!"
+  msg["From"] = sender_email
+  msg["Body"] = "test text"
+  msg["To"] = email_address
+  html_line ="""<html> random text <ul> <li> {download_link}</ul></html>""".format(download_link=download_link)
+  print(download_link)
+  part = MIMEText(html_line, "html")
+  msg.attach(part)
+  context = ssl.create_default_context()
+  with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+      server.login(sender_email, password)
+      server.sendmail(
+          sender_email, email_address, msg.as_string()
+      )
+
+
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    # testcode = base64.b64encode(data).encode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
+    print(bin_str)
+    print("\n\n\n")
+    # print(testcode)
+    return href, bin_str
+
 # main
 def app():
 
@@ -249,6 +292,8 @@ def app():
     except FileNotFoundError:
       pass
 
+    email_address = get_email()
+
     # drag and drop the mutation file
     with st.form(key='genes_file'):
       input_file = st.file_uploader("Drag your input file here")
@@ -257,7 +302,7 @@ def app():
       submit_file_list = st.form_submit_button()
 
     with st.form(key='genes'):
-      genelist = st.text_area("Insert your genes here", height=100)
+      genelist = st.text_area("Insert your genes here", height=100, value="NLGN3")
 
       # st.title(genelist)
       submit_pasted_list = st.form_submit_button()
@@ -265,24 +310,18 @@ def app():
       df = pd.DataFrame()
       loading_bar = Thread(target = waiting_function, args = (df, ))
       st.report_thread.add_report_ctx(loading_bar)
-      loading_bar.start()
 
-    if submit_pasted_list is not False:
+
+
+    if submit_pasted_list:
       save_genes(genelist)
-    
-    with st.form(key='email address'):
-        email = st.text_input(label='')
-        submit_email = st.form_submit_button()
-    if submit_email:
-        with open("email_address.dat", "w") as f:
-            f.write(email)
-        
     
     if submit_pasted_list or submit_file_list:
       safe = 1
       action_message = st.empty()
       mutations_pasted_list_message = "Looking for mutations"
       action_message.markdown(mutations_pasted_list_message)
+      loading_bar.start()
 
     if safe == 1:
       # run_old_main = Thread(target = old_main)
@@ -296,7 +335,10 @@ def app():
             btn = st.download_button(
                 label="Download",
                 data=fp,
-                file_name="Uniprot_mutations.zip",
-                # mime="application/zip"
-            )
+                file_name="Uniprot_mutations.zip")
+
+        download_link, bin_str = get_binary_file_downloader_html('output.zip', 'zip')
+        st.markdown(download_link, unsafe_allow_html=True)
         loading_bar.join()
+        if email_address:
+          send_email(email_address, download_link)
