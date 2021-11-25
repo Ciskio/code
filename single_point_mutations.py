@@ -13,9 +13,10 @@ import zipfile
 import base64
 # send email
 import email, smtplib, ssl
-from email.mime.text import MIMEText
+from email import encoders
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
-
+from email.mime.text import MIMEText
 
 # Functions
 
@@ -253,14 +254,22 @@ def get_email():
 def send_email(email_address, download_link):
   sender_email = "francescoliva91@gmail.com"
   password = "obddezmdwiayuxnw"
+  body = "Hi!\n your calculations are done. To download the results please paste the text \
+  from the attacched file in your browser"
+  filename = "results_link.txt"
   msg = MIMEMultipart("alternative")
   msg["Subject"] = "Your results are in!"
   msg["From"] = sender_email
-  msg["Body"] = "test text"
   msg["To"] = email_address
-  html_line ="""<html> random text <ul> <li> {download_link}</ul></html>""".format(download_link=download_link)
-  print(download_link)
-  part = MIMEText(html_line, "html")
+  # html_line ="""<html> random text <ul> <li> {download_link}</ul></html>""".format(download_link=download_link)
+  # print(download_link)
+  # part = MIMEText(html_line, "html")
+  # msg.attach(part)
+  msg.attach(MIMEText(body, "plain"))
+  with open(filename, "rb") as attachment:
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(attachment.read())
+  encoders.encode_base64(part)
   msg.attach(part)
   context = ssl.create_default_context()
   with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -276,10 +285,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(data).decode()
     # testcode = base64.b64encode(data).encode()
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download {file_label}</a>'
-    print(bin_str)
-    print("\n\n\n")
     # print(testcode)
-    return href, bin_str
+    return href, "data:application/octet-stream;base64," + bin_str
 
 # main
 def app():
@@ -339,6 +346,6 @@ def app():
 
         download_link, bin_str = get_binary_file_downloader_html('output.zip', 'zip')
         st.markdown(download_link, unsafe_allow_html=True)
+        with open("results_link.txt", "w") as f:
+          f.write(bin_str)
         loading_bar.join()
-        if email_address:
-          send_email(email_address, download_link)
