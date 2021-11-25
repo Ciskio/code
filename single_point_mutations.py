@@ -247,7 +247,7 @@ def compress_function(files, outputname):
 
 def get_email():
   with st.form(key='email_address'):
-    email = st.text_input(label='Insert email address to get notified when your job is done.', value="mrgreat@bestmail.com")
+    email = st.text_input(label='Insert email address to get notified when your job is done.', value="yourname@yourprovider.com")
     submit_email = st.form_submit_button()
     return email
 
@@ -270,6 +270,11 @@ def send_email(email_address, download_link):
     part = MIMEBase("application", "octet-stream")
     part.set_payload(attachment.read())
   encoders.encode_base64(part)
+  # Add header as key/value pair to attachment part
+  part.add_header(
+    "Content-Disposition",
+    f"attachment; filename= {filename}",
+  )
   msg.attach(part)
   context = ssl.create_default_context()
   with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -309,7 +314,7 @@ def app():
       submit_file_list = st.form_submit_button()
 
     with st.form(key='genes'):
-      genelist = st.text_area("Insert your genes here", height=100, value="NLGN3")
+      genelist = st.text_area("Insert your genes here", height=100, value="NLGN3\nGRIN2B")
 
       # st.title(genelist)
       submit_pasted_list = st.form_submit_button()
@@ -349,3 +354,5 @@ def app():
         with open("results_link.txt", "w") as f:
           f.write(bin_str)
         loading_bar.join()
+        if email_address:
+          send_email(email_address, download_link)
