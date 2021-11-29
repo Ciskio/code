@@ -17,6 +17,8 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+# password
+from getpass import getpass
 
 # Functions
 
@@ -252,8 +254,9 @@ def get_email():
     return email
 
 def send_email(email_address, download_link):
-  sender_email = "**"
-  password = "**"
+  sender_email = "francescoliva91@gmail.com"
+  print("insert password for email sender:")
+  password = getpass()
   body = "Hi!\n your calculations are done. To download the results please paste the text \
   from the attacched file in your browser"
   filename = "results_link.txt"
