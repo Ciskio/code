@@ -253,7 +253,7 @@ def get_email():
 
 def send_email(email_address, download_link):
   sender_email = "francescoliva91@gmail.com"
-  password = "***"
+  password = "obddezmdwiayuxnw"
   body = "Hi!\n your calculations are done. To download the results please paste the text \
   from the attacched file in your browser"
   filename = "results_link.txt"
