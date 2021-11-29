@@ -254,38 +254,44 @@ def get_email():
     return email
 
 def send_email(email_address, download_link):
-  sender_email = input("Please, enter the email address from which you want to send your email")
-  print("Please, insert password for email sender:")
-  password = getpass()
-  body = "Hi!\n your calculations are done. To download the results please paste the text \
-  from the attacched file in your browser"
-  filename = "results_link.txt"
-  msg = MIMEMultipart("alternative")
-  msg["Subject"] = "Your results are in!"
-  msg["From"] = sender_email
-  msg["To"] = email_address
-  # html_line ="""<html> random text <ul> <li> {download_link}</ul></html>""".format(download_link=download_link)
-  # print(download_link)
-  # part = MIMEText(html_line, "html")
-  # msg.attach(part)
-  msg.attach(MIMEText(body, "plain"))
-  with open(filename, "rb") as attachment:
-    part = MIMEBase("application", "octet-stream")
-    part.set_payload(attachment.read())
-  encoders.encode_base64(part)
-  # Add header as key/value pair to attachment part
-  part.add_header(
-    "Content-Disposition",
-    f"attachment; filename= {filename}",
-  )
-  msg.attach(part)
-  context = ssl.create_default_context()
-  with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-      server.login(sender_email, password)
-      server.sendmail(
-          sender_email, email_address, msg.as_string()
+  # # sender_email = input("Please, enter the email address from which you want to send your email\n")
+  # print("Please, insert password for email sender:")
+  # password = getpass()
+  with st.form(key="Login password sender"):
+    sender_email = st.text_input("email address to send the email FROM")
+    password = st.text_input("insert password", type="password")
+    submit_email_data = st.form_submit_button()
+    print(sender_email)
+    print(password)
+    if submit_email_data:
+      body = "Hi!\n your calculations are done. To download the results please paste the text \
+      from the attacched file in your browser"
+      filename = "results_link.txt"
+      msg = MIMEMultipart("alternative")
+      msg["Subject"] = "Your results are in!"
+      msg["From"] = sender_email
+      msg["To"] = email_address
+      # html_line ="""<html> random text <ul> <li> {download_link}</ul></html>""".format(download_link=download_link)
+      # print(download_link)
+      # part = MIMEText(html_line, "html")
+      # msg.attach(part)
+      msg.attach(MIMEText(body, "plain"))
+      with open(filename, "rb") as attachment:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachment.read())
+      encoders.encode_base64(part)
+      # Add header as key/value pair to attachment part
+      part.add_header(
+        "Content-Disposition",
+        f"attachment; filename= {filename}",
       )
-
+      msg.attach(part)
+      context = ssl.create_default_context()
+      with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+          server.login(sender_email, password)
+          server.sendmail(
+              sender_email, email_address, msg.as_string()
+          )
 
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
