@@ -252,8 +252,8 @@ def get_email():
     return email
 
 def send_email(email_address, download_link):
-  sender_email = "francescoliva91@gmail.com"
-  password = "obddezmdwiayuxnw"
+  sender_email = "**"
+  password = "**"
   body = "Hi!\n your calculations are done. To download the results please paste the text \
   from the attacched file in your browser"
   filename = "results_link.txt"
