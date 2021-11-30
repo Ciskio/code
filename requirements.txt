@@ -1,0 +1,8 @@
+bs4
+urllib
+threading
+zipfile
+base64
+email
+smtplib
+ssl
