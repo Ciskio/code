@@ -2,7 +2,7 @@ import streamlit as st
 
 # Custom imports 
 from multipage import MultiPage
-import automodeller #, single_point# import your pages here
+import automodeller, single_point# import your pages here
 
 # Create an instance of the app 
 app = MultiPage()
@@ -12,6 +12,6 @@ st.title("Main Page")
 
 # Add all your applications (pages) here
 app.add_page("Automodeller", automodeller.app)
-app.add_page("Download single point mutations", automodeller.singlepoint)
+app.add_page("Download single point mutations", single_point.app)
 # The main app
 app.run()
