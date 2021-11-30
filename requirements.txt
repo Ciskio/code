@@ -1,4 +1,1 @@
 beautifulsoup4
-multipage
-automodeller
-single_point_mutations
