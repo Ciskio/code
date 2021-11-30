@@ -18,8 +18,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# password
-from getpass import getpass
+
 
 # save the file in the directory where  the app is running.
 def save_file(infile):
