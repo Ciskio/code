@@ -32,6 +32,8 @@ def start_desktop():
 def connect_to_altair():
     cmdmod = "./connect_altair.sh" # connect to altair
     test = subprocess.run(cmdmod, shell=True, universal_newlines=True, check=True)
+    with open("test.txt","w") as f:
+        f.write("we'r in")
 
 
 def check_mistakes(parameter_value, parameter_name):
