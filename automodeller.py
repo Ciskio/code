@@ -117,7 +117,7 @@ def app():
 
   if input_file is not None:
     save_file(input_file)
-    connect_to_altair()
+   # connect_to_altair()
     
   #    start_desktop()
 
