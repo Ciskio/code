@@ -28,6 +28,11 @@ def save_file(infile):
 def start_desktop():
     cmdmod = "/opt/TurboVNC/bin/vncserver &" # starts the vncdesktop
     test = subprocess.run(cmdmod, shell=True, universal_newlines=True, check=True)
+ 
+def connect_to_altair():
+    cmdmod = "./connect_altair.sh" # connect to altair
+    test = subprocess.run(cmdmod, shell=True, universal_newlines=True, check=True)
+
 
 def check_mistakes(parameter_value, parameter_name):
   float_parameters = ["res", "seqid", "eva"]
@@ -110,5 +115,7 @@ def app():
 
   if input_file is not None:
     save_file(input_file)
+    connect_to_altair()
+    
   #    start_desktop()
 
