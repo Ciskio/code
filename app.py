@@ -10,8 +10,6 @@ app = MultiPage()
 # Title of the main page
 st.title("Main Page")
 
-[theme]
-base="dark"
 
 # Add all your applications (pages) here
 app.add_page("Download single point mutations", single_point_mutations.app)
