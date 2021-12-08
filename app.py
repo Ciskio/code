@@ -8,7 +8,7 @@ import automodeller, single_point_mutations# import your pages here
 app = MultiPage()
 
 # Title of the main page
-st.title("Main Page")
+st.title("The MoNvIso website")
 
 
 # Add all your applications (pages) here
