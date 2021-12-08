@@ -70,7 +70,7 @@ def write_parameters_file(parameters_dict):
 
 # title
 def app():
-  st.title("Automodeling Software")
+  st.title("MoNvIso Software")
 
   # drag and drop the mutation file
   input_file = st.file_uploader("Drag your input file here")
