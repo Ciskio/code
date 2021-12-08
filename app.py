@@ -8,7 +8,7 @@ import monviso, single_point_mutations# import your pages here
 app = MultiPage()
 
 # Title of the main page
-st.title("The __Mo__deling e__Nv__ironment for __Iso__forms website")
+st.title("__The __*Mo*__deling e__*Nv*__ironment for __*Iso*__forms website__")
 
 
 # Add all your applications (pages) here
