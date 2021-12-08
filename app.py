@@ -2,7 +2,7 @@ import streamlit as st
 
 # Custom imports 
 from multipage import MultiPage
-import automodeller, single_point_mutations# import your pages here
+import monviso, single_point_mutations# import your pages here
 
 # Create an instance of the app 
 app = MultiPage()
